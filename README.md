@@ -7,9 +7,10 @@ Basic Game (sprint 1)
 	*	After a certain time, you can use an EMP generator to blow up all the missiles currently on the screen
 	*	If a missile explodes on the ground, the game is stopped and gives you a score
 	*	Missiles come in waves, with bonus score for completing each wave
-			(Optional)	If weather is implemented, each wave gets different weather
 
 Add Cool stuff (sprint 2)
+	*	After each wave, option displayed to improve defenses
+	*	Drones for faster anti-missile response
 	*	Day/night sky
 	*	Inclement weather
 			Select weather types based on level, or
