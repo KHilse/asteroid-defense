@@ -7,6 +7,8 @@ Basic Game (sprint 1)
 	*	After a certain time, you can use an EMP generator to blow up all the missiles currently on the screen
 	*	If a missile explodes on the ground, the game is stopped and gives you a score
 	*	Missiles come in waves, with bonus score for completing each wave
+		*	A wave will be a number of missiles fired in groups of 0-2 until the wave missile limit is met
+		*	A wave is completed when all the missiles have been destroyed
 
 Add Cool stuff (sprint 2)
 	*	After each wave, option displayed to improve defenses
@@ -16,5 +18,6 @@ Add Cool stuff (sprint 2)
 			Select weather types based on level, or
 				use current weather from API
 	*	Bomber strike
-			It takes three successful hits to destroy the bomber
+		*	A wave will contain a bomber every fifth wave
+		*	It takes three successful hits to destroy the bomber
 

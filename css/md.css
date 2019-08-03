@@ -3,6 +3,38 @@ html, body, div {
 	padding: 0;
 }
 
+input {
+	text-align: center;
+	margin: 10px auto;
+	display: block;
+	align-self: center;
+	font-size: 24px;
+	font-weight: bold;
+	font-family: sans-serif;
+}
+
+.message-text {
+	color: #F33;
+	text-align: center;
+	margin: 20px;
+	text-shadow: 3px 3px 3px white,
+				 -2px -2px 2px white,
+				 2px -2px 2px white,
+				 -2px 2px 2px white;
+	font-size: 36px;
+	font-family: sans-serif;
+	font-weight: bold;
+}
+
+.missile {
+	position: absolute;
+	width: 10px;
+	height: 10px;
+	border: 3px solid yellow;
+	background-color: white;
+	border-radius: 50%;
+	top: 0px;
+}
 
 #game-container {
 	position: absolute;
@@ -21,6 +53,21 @@ html, body, div {
 	left: 0px;
 	z-index: 100;
 }
+
+#message {
+	position:absolute;
+	background-image: linear-gradient(gray, black);
+	width: 50%;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 110;
+	visibility: hidden;
+	border: 5px solid red;
+	border-radius: 10px;
+	box-shadow: 10px 10px 10px black;
+}
+
 
 #sky {
 	position: absolute;
