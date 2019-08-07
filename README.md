@@ -1,11 +1,15 @@
-# asteroid-defense
-A simple game built using CSS and Javascript with JQuery for HTML DOM manipulation
+# Asteroid Defense
+A simple game built using CSS and Javascript
+
+I built this game as an HTML/CSS DOM manipulation project for my General Assembly immersive class. In addition, the game uses an AJAX query to use the OpenWeather API to grab current weather conditions for the cities that the player is defending in the game. If the weather in the real city is cloudy, it'll also be cloudy in the game!
 
 ## How to Play
-	- Asteroids are heading towards your city and you must stop them! Click near them to direct defensive fire and destroy them before they hit!
-	- If an asteroid impacts on the ground, the game is over.
+	- Asteroids are heading towards your city and you must stop them!
+	- Click near them to direct defensive fire and destroy them before they hit!
+	- If an asteroid impacts on the ground, the game is over
 	- Asteroids come in waves, with bonus score for completing each wave
-	- A wave will be a number of asteroids fired in groups of 0-2 until the wave's asteroid count is met
+	- There's also a bonus for destroying multiple asteroids with one shot
+	- A wave consists of a number of asteroids fired in groups over time
 	- A wave is completed when all the asteroids have been destroyed
 
 ## Future Cool Stuff
