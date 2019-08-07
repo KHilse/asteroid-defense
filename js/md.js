@@ -36,6 +36,7 @@
 	const BONUS_MULTIPLIER = 100;
 	const ASTEROID_SIZE = 64;
 	const EXPLOSION_SIZE = 225;
+	const EXPLOSION_SOUND_COUNT = 16;
 
 	// DOM ELEMENTS
 	var container = document.getElementById("game-container");
@@ -168,6 +169,7 @@
 	//		Show message with instructions and start button
 	container.addEventListener("click", handleClick);
 	showStartMessage();
+	loadSounds();
 
 
 // FUNCTIONS
@@ -177,6 +179,7 @@ function handleClick(event) {
 	if (event.target.id == "reset") {
 		startGame();
 	} else {
+		playExplosion();
 		fireAA(event);
 	}
 }
@@ -184,7 +187,9 @@ function handleClick(event) {
 function startGame(event) {
 
 	// Reset game data
+	score = 0;
 	waveCount = 0;
+	explosionCount = 0;
 	asteroidSpeed = INITIAL_ASTEROID_SPEED;
 	waveInfo.numAsteroids = INITIAL_ASTEROID_COUNT;	
 
@@ -263,6 +268,7 @@ function stopGame() {
 	message.children[0].innerHTML = END_GAME_MESSAGE + "<br /><br />Score: " + score;
 	// 	Show Play Again button
 	message.children[1].value = "Play again!";
+	document.getElementById("sound-game-over").play();
 }
 
 function showStartMessage() {
@@ -281,7 +287,7 @@ function newWave() {
 	tickCount = 1;
 	asteroidSpeed += ASTEROID_SPEED_INCREMENT;
 	waveInfo.numAsteroids = 5 + waveCount;
-	document.getElementById("scoreboard-wave").children[0].innerText = "Wave " + waveCount + ", " + asteroidSpeed * 1000 + "m/sec, " + waveInfo.numAsteroids + " rocks";
+	updateScoreboardWave();
 
 	// Set new location
 	currentCity = cities[Math.floor(Math.random() * cities.length)];
@@ -318,11 +324,13 @@ function getCurrentWeather(currentCity) {
 
 function addAsteroid() {
 	waveInfo.asteroidsInFlight.push(new Asteroid());
+	updateScoreboardWave();
 }
 
 function removeAsteroid(i) {
 	container.removeChild(waveInfo.asteroidsInFlight[i].element);
 	waveInfo.asteroidsInFlight.splice(i, 1);
+	updateScoreboardWave();
 }
 
 function fireAA(event) {
@@ -361,4 +369,23 @@ function bonusScore(msg, val, x, y) {
 		bonusElement.parentElement.removeChild(bonusElement);
 	}, BONUS_MESSAGE_DURATION);
 	updateScore(val);
+}
+
+function updateScoreboardWave() {
+	document.getElementById("scoreboard-wave").children[0].innerText = "Wave " + waveCount + ", " + asteroidSpeed * 1000 + "m/sec, " + waveInfo.asteroidsInFlight.length + "/" + waveInfo.numAsteroids + " asteroids";
+}
+
+function playExplosion() {
+	document.getElementById("sound-explosion-" + (explosionCount++ % EXPLOSION_SOUND_COUNT)).play();
+}
+
+function loadSounds() {
+	for (var i = 0; i < EXPLOSION_SOUND_COUNT; i++) {
+		var el = document.createElement("audio");
+		el.id = "sound-explosion-" + i;
+		el.src = "sounds/explosion-01.wav";
+		el.type = "audio/wav";
+		el.preload = "auto";
+		document.getElementsByTagName("body")[0].appendChild(el);
+	}
 }
