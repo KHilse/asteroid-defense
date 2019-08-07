@@ -1,4 +1,4 @@
-# missile-defense
+# asteroid-defense
 A simple game built using CSS and Javascript with JQuery for HTML DOM manipulation
 
 
