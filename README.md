@@ -44,7 +44,10 @@ I built this game as an HTML/CSS DOM manipulation project for my General Assembl
 		Show Score with Play Again button
 
 ## Attributions
-[Travel vector created by freepik](https://www.freepik.com/free-photos-vectors/travel)
-[Background vector created by macrovector](https://www.freepik.com/free-photos-vectors/background)
-[Design vector created by freepik](https://www.freepik.com/free-photos-vectors/design)
-[Abstract vector created by macrovector_official](https://www.freepik.com/free-photos-vectors/abstract)
+ [Travel vector created by freepik](https://www.freepik.com/free-photos-vectors/travel)
+
+ [Background vector created by macrovector](https://www.freepik.com/free-photos-vectors/background)
+ 
+ [Design vector created by freepik](https://www.freepik.com/free-photos-vectors/design)
+ 
+ [Abstract vector created by macrovector_official](https://www.freepik.com/free-photos-vectors/abstract)
