@@ -45,6 +45,7 @@
 	var cityImg = document.getElementById("city").children[0];
 	var cloudImg = document.getElementById("clouds").children[0];
 	var skyImg = document.getElementById("sky").children[0];
+	var mushroomCloudElement = document.getElementById("mushroom-cloud");
 	var message = document.getElementById("message");
 
 	// GAME VARIABLES
@@ -168,6 +169,7 @@
 	//		Hide results if visible
 	//		Show message with instructions and start button
 	container.addEventListener("click", handleClick);
+	mushroomCloudElement.style.visibility = "hidden";
 	showStartMessage();
 	loadSounds();
 
@@ -192,6 +194,7 @@ function startGame(event) {
 	explosionCount = 0;
 	asteroidSpeed = INITIAL_ASTEROID_SPEED;
 	waveInfo.numAsteroids = INITIAL_ASTEROID_COUNT;	
+	mushroomCloudElement.style.visibility = "hidden";
 
 	while (waveInfo.asteroidsInFlight.length > 0) {
 		removeAsteroid(0);
@@ -262,6 +265,8 @@ function tick() {
 function stopGame() {
 	// 	Stop game loop
 	clearInterval(gameInterval);
+	// Show mushroom cloud
+	mushroomCloudElement.style.visibility = "visible";
 	// 	Show message box
 	message.style.visibility = "visible";
 	// 	Display results / score

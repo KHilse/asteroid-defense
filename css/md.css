@@ -176,6 +176,14 @@ p {
 	z-index: 30;
 }
 
+#mushroom-cloud {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 81;
+}
+
 #clouds {
 	pointer-events: none;
 	position: absolute;
