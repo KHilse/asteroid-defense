@@ -6,11 +6,16 @@
 	</head>
 	<body>
 		<div id="game-container">
+			<div id="click-target"></div>
 			<div id="sky"><img class="background-image" src="img/clouds0.jpg"></div>
-			<div id="clouds"><img class="background-image" src="img/clouds.gif"></div>
 			<div id="city"><img class="background-image" src="img/Miami.gif"></div>
-			<div id="weather-effect"></div>
-			<div id="scoreboard"></div>
+			<div id="scoreboard">
+				<div id="scoreboard-score" class="scoreboard-item"><p id="score">0</p></div>
+				<div id="scoreboard-location"><p class="scoreboard-item"></p></div>
+				<div id="scoreboard-weather"><p class="scoreboard-item"></p></div>
+				<div id="scoreboard-wave"><p class="scoreboard-item"></p></div>
+			</div>
+			<div id="clouds"><img class="background-image" src="img/clouds.gif"></div>
 			<div id="message">
 				<p class="message-text"></p>
 				<input id="reset" type="button">

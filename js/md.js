@@ -39,15 +39,14 @@ class Asteroid {
 }
 
 class Explosion {
-	constructor(x, y, idx) {
+	constructor(x, y) {
 		this.x = x;
 		this.y = y;
 		this.imgIndex = 0;
-		this.idx = idx;
 		this.range = 0;
+		this.hitCount = 0;
 		this.element = document.createElement("img");
 		this.element.setAttribute("class", "explosion");
-		this.element.setAttribute("src", "#");
 		container.appendChild(this.element);
 	}
 
@@ -76,22 +75,24 @@ class Explosion {
 
 			// Did we hit anything?
 			// Have to compute the distance between the center points of the asteroids and the explosion itself
+			var hitCount = 0;
 			for (var i = 0; i < waveInfo.asteroidsInFlight.length; i++) {
 				var dist = getDistance(this.x, this.y, waveInfo.asteroidsInFlight[i].centerXPosition, waveInfo.asteroidsInFlight[i].centerYPosition);
-				if (dist < (this.range * 1.5)) {
-					console.log("i", i, "asteroids:", waveInfo.asteroidsInFlight.length);
-
+				if (dist < this.range) {
+					this.hitCount++;
+					updateScore(waveInfo.scoreAsteroid);
 					container.removeChild(waveInfo.asteroidsInFlight[i].element);
 					waveInfo.asteroidsInFlight.splice(i, 1);
-					console.log("i", i, "asteroids:", waveInfo.asteroidsInFlight.length);
-					break;	// remove one asteroid at a time
+					break; // Kill one asteroid per phase of animation
 				}
 			}
-
-
 			this.imgIndex++;
 		} else { // clean up after explosion
-			this.element.style.visibility == "hidden";
+			if (this.hitCount > 1) {
+				bonusScore(`${this.hitCount} hit bonus!`, 100 * this.hitCount, this.x, this.y);
+				this.hitCount = 0;
+			}
+//			this.element.style.visibility == "hidden";
 			container.removeChild(this.element);
 			waveInfo.explosions.shift(); // Assuming the oldest explosion is the first index in the array
 		}
@@ -126,13 +127,18 @@ const GAME_INSTRUCTIONS = "Point and click to fire anti-asteroid guns and stop t
 const INITIAL_ASTEROID_SPEED = 2;
 const ASTEROID_INTERVAL = 32;
 const INTERVAL_LENGTH = 50; // 50ms for release version
+const BONUS_MESSAGE_DURATION = 5000;
 
 var container = document.getElementById("game-container");
 var scoreboard = document.getElementById("scoreboard");
+var scoreElement = document.getElementById("score");
+var bonusMessages = [];
 var cityImg = document.getElementById("city").children[0];
 var cloudImg = document.getElementById("clouds").children[0];
 var skyImg = document.getElementById("sky").children[0];
 var message = document.getElementById("message");
+
+container.addEventListener("click", handleClick);
 
 var gameInterval;
 var asteroidSpeed;
@@ -140,8 +146,11 @@ var waveInfo = {
 	numAsteroids: 5,
 	asteroidsInFlight: [],
 	explosions: [],
-	bomberPass: false
+	scoreAsteroid: 100,
+	scoreWave: 500
 };
+var score = 0;
+var bonusMessageIndex = 0;
 var waveCount = 0;
 var tickCount = 0;
 var explosionCount = 0;
@@ -153,9 +162,28 @@ var weatherObj = { clouds: 0 };
 	// 	Show message with instructions and start button
 showStartMessage();
 
+function handleClick(event) {
+	console.log(event.target);
+	if (event.target.id == "reset") {
+		startGame();
+	// } else if (event.target.id == "weather-effect") {
+	// 	fireAA();
+	// } else {
+	// 	console.log("click not handled, doing nothing");
+	// }
+	} else {
+		fireAA(event);
+	}
+}
+
+
 // Game Start
-function startGame() {
+function startGame(event) {
 	console.log("startGame:");
+
+	// event.stopPropagation();
+
+
 	// 	Hide message box
 	hideMessage();
 
@@ -170,7 +198,7 @@ function startGame() {
 	tickCount = 1;
 
 	// Set click handler on game container
-	container.addEventListener("click", fireAA);
+	//container.addEventListener("click", fireAA);
 
 }
 
@@ -205,7 +233,23 @@ function tick() {
 	// 	If any Asteroid hits the ground, game over
 	// 	Check if wave is complete
 	// 		Wave is complete when all Asteroids have been deployed, and
+	if (waveInfo.numAsteroids == 0 && waveInfo.asteroidsInFlight.length == 0) {
+		updateScore(waveInfo.scoreWave);
+		waveInfo.waveCount++;
+		newWave();
+	}
 	// 		All Asteroids have been destroyed or game is lost
+
+	//	Update bonus messages
+	var bonusMessages = document.querySelectorAll(".bonus");
+	for (msg of bonusMessages) {
+		if (msg.style.opacity == "") {
+			msg.style.opacity = 1;
+		} else {
+			msg.style.opacity = Math.max(0, Number(msg.style.opacity) - .04);
+		}
+		msg.style.top = "" + (Number(msg.style.top.substring(0,msg.style.top.length-2)) - 1) + "px"; 
+	}
 }
 
 function stopGame() {
@@ -223,7 +267,7 @@ function showStartMessage() {
 	message.style.visibility = "visible";
 	message.children[0].innerText = GAME_INSTRUCTIONS;
 	message.children[1].value = "Start Game!";
-	message.children[1].addEventListener("click", startGame);
+//	message.children[1].addEventListener("click", startGame);
 	// document.addEventListener("click", startGame);
 }
 
@@ -235,28 +279,25 @@ function hideMessage() {
 function newWave() {
 	waveCount++;
 	tickCount = 1;
+	asteroidSpeed += 0.5;
 	waveInfo.numAsteroids = 5 + waveCount;
-	if (!(waveCount % 5)) {
-		waveInfo.bomberPass = true;
-	} else {
-		waveInfo.bomberPass = false;
-	}
-
-
-
+	document.getElementById("scoreboard-wave").children[0].innerText = "Wave " + waveCount + ", " + asteroidSpeed * 1000 + "m/sec, " + waveInfo.numAsteroids + " rocks";
 	// Set new location
 	// Set Environment
 	currentCity = cities[Math.floor(Math.random() * cities.length)];
 	cityImg.src = encodeURI("img/" + currentCity + ".gif");
+	document.getElementById("scoreboard-location").children[0].innerText = currentCity;
 
 	// Set current weather
 	getCurrentWeather(currentCity);
 	if (weatherObj.clouds > 0) { // TODO: set real threshold
 		cloudImg.style.visibility = "visible"
 		skyImg.src = "img/" + skyCloudImages[Math.floor(Math.random() * skyCloudImages.length)];
+		document.getElementById("scoreboard-weather").children[0].innerText = "Cloudy";
 	} else {
 		cloudImg.style.visibility = "hidden";
 		skyImg.src = "img/" + skyClearImages[Math.floor(Math.random() * skyClearImages.length)];
+		document.getElementById("scoreboard-weather").children[0].innerText = "Clear";
 	}
 	// Asteroids in flight will be set per the Asteroid_INTERVAL check in the tick() method
 }
@@ -282,12 +323,30 @@ function addAsteroid() {
 
 
 function fireAA(event) {
-	console.log("Clicked:", event.location);
-	if (tickCount > 0) {
-		waveInfo.explosions.push(new Explosion(event.clientX, event.clientY, explosionCount++));
-	}
+//	if (tickCount > 0) {
+		waveInfo.explosions.push(new Explosion(event.x, event.y));
+//	}
 }
 
 function getDistance(x1, y1, x2, y2) {
-	return Math.sqrt((x2 - x1)^2 + (y2 - y1)^2);
+	return Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1,2));
+}
+
+function updateScore(val) {
+	score += val;
+	scoreElement.innerText = score;
+}
+
+function bonusScore(msg, val, x, y) {
+	var bonusElement = document.createElement("p");
+	bonusElement.setAttribute ("class", "bonus");
+	bonusElement.innerText = msg;
+	bonusElement.style.left = x.toString() + "px";
+	bonusElement.style.top = y.toString() + "px";
+	document.getElementById("game-container").appendChild(bonusElement);
+	// bonusElement.setAttribute("class", "bonus bonus-end");
+	setTimeout(() => {
+		bonusElement.parentElement.removeChild(bonusElement);
+	}, BONUS_MESSAGE_DURATION);
+	updateScore(val);
 }
