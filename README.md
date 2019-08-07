@@ -9,12 +9,12 @@ A simple game built using CSS and Javascript with JQuery for HTML DOM manipulati
 	- A wave is completed when all the asteroids have been destroyed
 
 ## Future Cool Stuff
-	* Day/night sky
-	* Inclement weather
-		* Select weather types based on level, or use current weather from API
-	* Chondritic Asteroid
-		* A wave may contain a chondritic asteroid that breaks up in the atmosphere
-		* All the fragments must be destroyed
+	- Day/night sky
+	- Inclement weather
+		Select weather types based on level, or use current weather from API
+	- Chondritic Asteroid
+		A wave may contain a chondritic asteroid that breaks up in the atmosphere
+		All the fragments must be destroyed
 
 ## Game States
 	Before Start / Restart
