@@ -27,6 +27,7 @@
 	// CONSTANTS
 	const GAME_INSTRUCTIONS = "Point and click to fire anti-asteroid guns and stop the asteroids before they hit the city!";
 	const END_GAME_MESSAGE = "The asteroids destroyed the city as they always do, those bastards. But you saved lots of lives!";
+	const KILLED_AIRCRAFT = "(except for the folks in the aircraft you shot down, good job on that -- NOT!)";
 	const INITIAL_ASTEROID_SPEED = 2;
 	const ASTEROID_SPEED_INCREMENT = 0.5;
 	const INITIAL_ASTEROID_COUNT = 5;
@@ -69,6 +70,7 @@
 	var explosionCount = 0;
 	var currentCity = "";
 	var weatherObj = { clouds: 0 };
+	var aircraftKilled = false;
 
 // CLASSES
 	class Asteroid {
@@ -203,9 +205,10 @@
 				for (var i = 0; i < waveInfo.airplanesInFlight.length; i++) {
 					var dist = getDistance(this.x, this.y, waveInfo.airplanesInFlight[i].centerXPosition, waveInfo.airplanesInFlight[i].centerYPosition);
 					if (dist < this.range) {
-						updateScore(waveInfo.scoreAirplane);
+						// updateScore(waveInfo.scoreAirplane);
 						bonusScore(`Airplane hit!`, waveInfo.scoreAirplane, this.x, this.y);
 						removeAirplane(i);
+						aircraftKilled = true;
 						break; // Kill one airplane per phase of animation
 					}
 				}
@@ -253,6 +256,7 @@ function startGame(event) {
 	asteroidSpeed = INITIAL_ASTEROID_SPEED;
 	waveInfo.numAsteroids = INITIAL_ASTEROID_COUNT;	
 	mushroomCloudElement.style.visibility = "hidden";
+	aircraftKilled = false;
 
 	while (waveInfo.asteroidsInFlight.length > 0) {
 		removeAsteroid(0);
@@ -319,7 +323,7 @@ function tick() {
 	}
 
 	//	Update bonus messages
-	var bonusMessages = document.querySelectorAll(".bonus .penalty");
+	var bonusMessages = document.querySelectorAll(".bonus,.penalty");
 	for (msg of bonusMessages) {
 		if (msg.style.opacity == "") {
 			msg.style.opacity = 1;
@@ -338,7 +342,11 @@ function stopGame() {
 	// 	Show message box
 	message.style.visibility = "visible";
 	// 	Display results / score
-	message.children[0].innerHTML = END_GAME_MESSAGE + "<br /><br />Score: " + score;
+	var resultMessage = END_GAME_MESSAGE;
+	if (aircraftKilled) {
+		resultMessage += KILLED_AIRCRAFT;
+	}
+	message.children[0].innerHTML = resultMessage + "<br /><br />Score: " + score;
 	// 	Show Play Again button
 	message.children[1].value = "Play again!";
 	document.getElementById("sound-game-over").play();
@@ -361,6 +369,7 @@ function newWave() {
 	asteroidSpeed += ASTEROID_SPEED_INCREMENT;
 	waveInfo.numAsteroids = 5 + waveCount;
 	updateScoreboardWave();
+	removeAllAirplanes();
 
 	// Set new location
 	currentCity = cities[Math.floor(Math.random() * cities.length)];
@@ -397,6 +406,18 @@ function getCurrentWeather(currentCity) {
 
 function addAirplane() {
 	waveInfo.airplanesInFlight.push(new Airplane());
+}
+
+function removeAirplane(i) {
+	container.removeChild(waveInfo.airplanesInFlight[i].element);
+	waveInfo.airplanesInFlight.splice(i, 1);
+}
+
+function removeAllAirplanes() {
+	for (var i = 0; i < waveInfo.airplanesInFlight.length; i++) {
+		container.removeChild(waveInfo.airplanesInFlight[i].element);
+	}
+	waveInfo.airplanesInFlight = [];
 }
 
 function addAsteroid() {
@@ -439,12 +460,14 @@ function bonusScore(msg, val, x, y) {
 	var bonusElement = document.createElement("p");
 	if (val > 0) {
 		bonusElement.setAttribute ("class", "bonus");
+		bonusElement.style.left = x.toString() + "px";
+		bonusElement.style.top = y.toString() + "px";
 	} else {
 		bonusElement.setAttribute ("class", "penalty");
+		bonusElement.style.left = (x - 10).toString() + "px";
+		bonusElement.style.top = (y - 10).toString() + "px";
 	}
 	bonusElement.innerText = msg;
-	bonusElement.style.left = x.toString() + "px";
-	bonusElement.style.top = y.toString() + "px";
 	document.getElementById("game-container").appendChild(bonusElement);
 	setTimeout(() => {
 		bonusElement.parentElement.removeChild(bonusElement);

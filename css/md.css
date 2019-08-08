@@ -171,7 +171,7 @@ p {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	z-index: 110;
+	z-index: 140;
 	visibility: hidden;
 	border: 5px solid red;
 	border-radius: 10px;
