@@ -43,6 +43,19 @@ p {
 	z-index: 500;
 }
 
+.penalty {
+	position: absolute;
+	top: -32px;
+	left: 0px;
+	font-size: 18px;
+	font-color: orange;
+	text-shadow: 3px 3px 3px #FD9,
+				 -2px -2px 2px #FD9,
+				 2px -2px 2px #FD9,
+				 -2px 2px 2px #FD9;
+	z-index: 500;
+}
+
 .background-image {
 	width: 1000px;
 	height: auto;
@@ -67,6 +80,13 @@ p {
 	height: 64px;
 	z-index: 80;
 	top: 0px;
+}
+
+.airplane {
+	position: absolute;
+	width: 64px;
+	height: 27px;
+	z-index: 79;
 }
 
 .explosion {

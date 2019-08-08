@@ -37,6 +37,8 @@
 	const ASTEROID_SIZE = 64;
 	const EXPLOSION_SIZE = 225;
 	const EXPLOSION_SOUND_COUNT = 16;
+	const AIRPLANE_WIDTH = 64;
+	const AIRPLANE_HEIGHT = 27;
 
 	// DOM ELEMENTS
 	var container = document.getElementById("game-container");
@@ -54,8 +56,10 @@
 	var waveInfo = {
 		numAsteroids: INITIAL_ASTEROID_COUNT,
 		asteroidsInFlight: [],
+		airplanesInFlight: [],
 		explosions: [],
 		scoreAsteroid: 100,
+		scoreAirplane: -100,
 		scoreWave: 500
 	};
 	var score = 0;
@@ -104,6 +108,51 @@
 		}
 	}
 
+	class Airplane {
+
+		constructor() {
+			if (Math.random() < 0.5) {
+				this.orientation = "left";
+				this.startXPosition = container.clientWidth;
+				this.startYPosition = (Math.random() * container.clientHeight / 2) + (container.clientHeight / 4);
+				this.endXPosition = -64;
+				this.endYPosition = (Math.random() * container.clientHeight / 2) + (container.clientHeight / 4);
+				this.moveValue = -2;
+			} else {
+				this.orientation = "right";
+				this.startXPosition = -64;
+				this.startYPosition = (Math.random() * container.clientHeight / 2) + (container.clientHeight / 4);
+				this.endXPosition = container.clientWidth;
+				this.endYPosition = (Math.random() * container.clientHeight / 2) + (container.clientHeight / 4);
+				this.moveValue = 2;
+			}
+			this.currentXPosition = this.startXPosition;
+			this.currentYPosition = this.startYPosition;
+			this.centerXPosition = this.startXPosition + 32;
+			this.centerYPosition = this.startYPosition + 14;
+			this.element = document.createElement("img");
+			this.element.setAttribute("class", "airplane");
+			this.element.style.top = "" + this.currentYPosition + "px";
+			this.element.style.left = "" + this.currentXPosition + "px";
+			this.element.setAttribute("src", "img/airplane-" + this.orientation + ".gif");
+
+			container.appendChild(this.element);
+		}
+
+		move() {
+			// move across by the moveValue amount, and
+			// move up/down by the x / slope
+			var slope = (this.endYPosition - this.startYPosition) / container.clientWidth;
+			this.currentXPosition += this.moveValue;
+			this.currentYPosition += this.moveValue * slope;
+			this.centerXPosition = this.currentXPosition + AIRPLANE_WIDTH / 2;
+			this.centerYPosition = this.currentYPosition + AIRPLANE_HEIGHT / 2;
+
+			this.element.style.top = "" + this.currentYPosition + "px";
+			this.element.style.left = "" + this.currentXPosition + "px";
+		}
+	}
+
 	class Explosion {
 		constructor(x, y) {
 			this.x = x;
@@ -149,6 +198,15 @@
 						updateScore(waveInfo.scoreAsteroid);
 						removeAsteroid(i);
 						break; // Kill one asteroid per phase of animation
+					}
+				}
+				for (var i = 0; i < waveInfo.airplanesInFlight.length; i++) {
+					var dist = getDistance(this.x, this.y, waveInfo.airplanesInFlight[i].centerXPosition, waveInfo.airplanesInFlight[i].centerYPosition);
+					if (dist < this.range) {
+						updateScore(waveInfo.scoreAirplane);
+						bonusScore(`Airplane hit!`, waveInfo.scoreAirplane, this.x, this.y);
+						removeAirplane(i);
+						break; // Kill one airplane per phase of animation
 					}
 				}
 				this.imgIndex++;
@@ -235,6 +293,16 @@ function tick() {
 		tickCount = 1;
 	}
 
+	// Add airplanes randomly
+	if (Math.random() < 0.01) {
+		addAirplane();
+	}
+
+	// Move airplanes
+	for (var i = 0; i < waveInfo.airplanesInFlight.length; i++) {
+		waveInfo.airplanesInFlight[i].move();
+	}
+
 	// 	Player clicks create explosions with effective range
 	// 		If a Asteroid is within range, kill the Asteroid
 	for (var i = 0; i < waveInfo.explosions.length; i++) {
@@ -251,7 +319,7 @@ function tick() {
 	}
 
 	//	Update bonus messages
-	var bonusMessages = document.querySelectorAll(".bonus");
+	var bonusMessages = document.querySelectorAll(".bonus .penalty");
 	for (msg of bonusMessages) {
 		if (msg.style.opacity == "") {
 			msg.style.opacity = 1;
@@ -327,6 +395,10 @@ function getCurrentWeather(currentCity) {
 	})
 }
 
+function addAirplane() {
+	waveInfo.airplanesInFlight.push(new Airplane());
+}
+
 function addAsteroid() {
 	waveInfo.asteroidsInFlight.push(new Asteroid());
 	updateScoreboardWave();
@@ -365,7 +437,11 @@ function updateScore(val) {
 
 function bonusScore(msg, val, x, y) {
 	var bonusElement = document.createElement("p");
-	bonusElement.setAttribute ("class", "bonus");
+	if (val > 0) {
+		bonusElement.setAttribute ("class", "bonus");
+	} else {
+		bonusElement.setAttribute ("class", "penalty");
+	}
 	bonusElement.innerText = msg;
 	bonusElement.style.left = x.toString() + "px";
 	bonusElement.style.top = y.toString() + "px";
